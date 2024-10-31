@@ -14,14 +14,6 @@ export class SKContainer extends SKElement {
     this.doLayout();
   }
 
-  protected _radius = 0;
-  set radius(r: number){
-    this._radius = r;
-  }
-  get radius(){
-    return this._radius;
-  }
-
   //#region managing children
 
   private _children: SKElement[] = [];
@@ -42,6 +34,14 @@ export class SKContainer extends SKElement {
   clearChildren() {
     this._children = [];
     invalidateLayout();
+  }
+
+  protected _radius = 0;
+  set radius(r: number){
+    this._radius = r;
+  }
+  get radius(){
+    return this._radius;
   }
 
   //#endregion
@@ -86,19 +86,22 @@ export class SKContainer extends SKElement {
   draw(gc: CanvasRenderingContext2D) {
     gc.save();
     // set coordinate system to padding box
+    gc.translate(this.x, this.y);
     gc.translate(this.margin, this.margin);
-    
+
     const w = this.paddingBox.width;
     const h = this.paddingBox.height;
 
-    if(this.fill){
+    // draw background colour if set
+    if (this.fill) {
       gc.beginPath();
-      gc.roundRect(this.x, this.y, w, h, this._radius);
+      gc.roundRect(0, 0, w, h, this._radius);
       gc.fillStyle =  this.fill;
       gc.fill();
     }
-    
-    if(this.border){
+
+    // draw border if set
+    if (this.border) {
       gc.strokeStyle = this.border;
       gc.lineWidth = 1;
       gc.stroke();

@@ -27,6 +27,19 @@ export class SKLabel extends SKElement {
     this.border = "";
   }
 
+  protected _fontColour = "black";
+  set fontColour(c: string) {
+    this._fontColour = c;
+  }
+  get fontColour() {
+    return this._fontColour;
+  }
+
+  _font = Style.font;
+
+  set font(f: string) {
+    this._font = f;
+  }
   align: LabelAlign;
 
   protected _text = "";
@@ -36,31 +49,6 @@ export class SKLabel extends SKElement {
   set text(t: string) {
     this._text = t;
     this.setMinimalSize(this.width, this.height);
-  }
-
-  protected _radius = 0;
-  set radius(r: number){
-    this._radius = r;
-  }
-  get radius(){
-    return this._radius;
-  }
-
-  protected _font = Style.font;
-  set font(s: string){
-    this._font = s;
-    this.setMinimalSize(this.width, this.height);
-  }
-  get font(){
-    return this._font;
-  }
-
-  protected _fontColour = Style.fontColour;
-  set fontColour(c: string) {
-    this._fontColour = c;
-  }
-  get fontColour() {
-    return this._fontColour;
   }
 
   setMinimalSize(width?: number, height?: number) {
@@ -83,21 +71,20 @@ export class SKLabel extends SKElement {
     const w = this.paddingBox.width;
     const h = this.paddingBox.height;
 
+    gc.translate(this.x, this.y);
     gc.translate(this.margin, this.margin);
 
-    if(this.fill){
-      gc.beginPath();
-      gc.roundRect(this.x, this.y, w, h, this._radius);
-      gc.fillStyle =  this.fill;
-      gc.fill();
+    if (this.fill) {
+      gc.fillStyle = this.fill;
+      gc.fillRect(0, 0, w, h);
     }
-    
-    if(this.border){
+
+    if (this.border) {
       gc.strokeStyle = this.border;
       gc.lineWidth = 1;
-      gc.stroke();
+      gc.strokeRect(0, 0, w, h);
     }
-    
+
     // render text
     gc.font = this._font;
     gc.fillStyle = this._fontColour;
@@ -106,17 +93,17 @@ export class SKLabel extends SKElement {
     switch (this.align) {
       case "left":
         gc.textAlign = "left";
-        gc.fillText(this.text, this.x + this.padding, this.y + h / 2);
+        gc.fillText(this.text, this.padding, h / 2);
 
         break;
       case "centre":
         gc.textAlign = "center";
-        gc.fillText(this.text, this.x + w / 2, this.y + h / 2);
+        gc.fillText(this.text, w / 2, h / 2);
 
         break;
       case "right":
         gc.textAlign = "right";
-        gc.fillText(this.text, this.x + w - this.padding, this.y + h / 2);
+        gc.fillText(this.text, w - this.padding, h / 2);
 
         break;
     }

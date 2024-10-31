@@ -8,19 +8,15 @@ import { requestMouseFocus } from "../dispatch";
 export type SKButtonProps = SKElementProps & { text?: string };
 
 export class SKButton extends SKElement {
-  constructor({ 
-    text = "", 
-    fill = "lightgrey",
-    ...elementProps
-  }: SKButtonProps = {}) {
+  constructor({ text = "", ...elementProps }: SKButtonProps = {}) {
     super(elementProps);
     this.padding = Style.textPadding;
     this.text = text;
-    this.fill = fill;
     this.calculateBasis();
     this.doLayout();
   }
 
+  _font = Style.font;
   state: "idle" | "hover" | "down" = "idle";
 
   protected _text = "";
@@ -33,42 +29,28 @@ export class SKButton extends SKElement {
     this.setMinimalSize(this.width, this.height);
   }
 
-  protected _radius = 4;
-  set radius(r: number) {
+  protected _fillColor = "lightgrey";
+  set fillColor(f: string) {
+    this._fillColor = f;
+  }
+
+  set font(f: string) {
+    this._font = f;
+  }
+
+  protected _radius = 0;
+  set radius(r: number){
     this._radius = r;
   }
-  get radius() {
+  get radius(){
     return this._radius;
   }
-
-  protected _font = Style.font;
-  set font(s: string) {
-    this._font = s;
-    this.setMinimalSize(this.width, this.height);
-  }
-  get font() {
-    return this._font;
-  }
-
-  protected _fontColour = Style.fontColour;
-  set fontColour(c: string) {
-    this._fontColour = c;
-  }
-  get fontColour() {
-    return this._fontColour;
-  }
-
-  protected _highlightColour = Style.highlightColour;
-  set highlightColour(hc: string){
-    this._highlightColour = hc;
-  }
-
 
   setMinimalSize(width?: number, height?: number) {
     width = width || this.width;
     height = height || this.height;
     // need this if w or h not specified
-    const m = measureText(this.text, this._font);
+    const m = measureText(this.text, this.font);
 
     if (!m) {
       console.warn(`measureText failed in SKButton for ${this.text}`);
@@ -126,7 +108,7 @@ export class SKButton extends SKElement {
     if (this.state == "hover" || this.state == "down") {
       gc.beginPath();
       gc.roundRect(this.x, this.y, w, h, this.radius);
-      gc.strokeStyle = this._highlightColour;
+      gc.strokeStyle = Style.highlightColour;
       gc.lineWidth = 8;
       gc.stroke();
     }
@@ -135,17 +117,17 @@ export class SKButton extends SKElement {
     gc.beginPath();
     gc.roundRect(this.x, this.y, w, h, this.radius);
     gc.fillStyle =
-      this.state == "down" ? this._highlightColour : this.fill;
-    gc.strokeStyle = this.border;
+      this.state == "down" ? Style.highlightColour : this._fillColor;
+    gc.strokeStyle = "black";
     // change fill to show down state
-    gc.lineWidth = this.state == "down" ? 4 : 2;
+    gc.lineWidth = this.state == "down" ? 4 : 1;
     gc.fill();
     gc.stroke();
     gc.clip(); // clip text if it's wider than text area
 
     // button label
     gc.font = this._font;
-    gc.fillStyle = this._fontColour;
+    gc.fillStyle = "black";
     gc.textAlign = "center";
     gc.textBaseline = "middle";
     gc.fillText(this.text, this.x + w / 2, this.y + h / 2);
